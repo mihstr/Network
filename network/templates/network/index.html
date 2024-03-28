@@ -1,5 +1,28 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
-{% endblock %}
+    <div class="container">
+        {% if message %}
+            <div class="alert alert-warning alert-dismissible mt-2">{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <div class="border border-top-0 rounded-bottom p-2">
+                <form action="{% url 'create_post' %}" method="post">
+                    {% csrf_token %}
+                    <textarea class="form-control border border-0 p-3" name="post" id="post_textarea" placeholder="What's happening?!" cols="100" rows="2"></textarea>
+                    <div class="d-flex justify-content-start">
+                        <input class="btn btn-primary mt-2" type="submit" value="Post">
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+{% endblock body %}
+
+{% block script %}
+    <script src="{% static 'network/script.js' %}"></script>
+{% endblock script %}

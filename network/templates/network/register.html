@@ -6,7 +6,9 @@
         <h2 class="mt-5">Register</h2>
     
         {% if message %}
-            <div class="alert alert-warning mt-2">{{ message }}</div>
+            <div class="alert alert-warning alert-dismissible mt-2">{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endif %}
 
         <form action="{% url 'register' %}" method="post">
