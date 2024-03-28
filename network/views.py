@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from .models import User, Post, Like
 
+import datetime
 
 def index(request):
     posts = Post.objects.all().order_by("-timestamp")
@@ -18,7 +19,6 @@ def create_post(request):
     if request.method == "POST":
         user = request.user
         content = request.POST["post"]
-        print(content)
         post = Post(content=content, user=user)
         post.save()
         messages.success(request, "Your post was published!")
