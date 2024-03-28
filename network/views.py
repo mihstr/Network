@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -18,8 +19,12 @@ def index(request):
 
 @login_required
 def following(request):
+    current_user = User.objects.get(username=request.user)
+    profiles_following = current_user.following.all()
+    profiles = [follower.profile for follower in profiles_following]
+    posts = Post.objects.filter(user__in=profiles)
     return render(request, "network/following.html", {
-
+        "posts": posts,
     })
 
 def user_profile (request, user_id):
