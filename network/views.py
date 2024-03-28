@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, InvalidPage
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -13,9 +13,21 @@ import datetime
 
 def index(request):
     posts = Post.objects.all().order_by("-timestamp")
+    p = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+
+    if not page_number:
+        page_number = 1
+
+    try:
+        page_obj = p.page(page_number)
+    except InvalidPage:
+        page_obj = p.page(1)
+        
     return render(request, "network/index.html", {
-        "posts": posts,
+        "page_obj": page_obj,
     })
+
 
 @login_required
 def following(request):
@@ -23,8 +35,22 @@ def following(request):
     profiles_following = current_user.following.all()
     profiles = [follower.profile for follower in profiles_following]
     posts = Post.objects.filter(user__in=profiles)
+
+    if len(posts) < 1:
+        messages.warning(request, "No posts to display.")
+
+    p = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+
+    if not page_number:
+        page_number = 1
+
+    try:
+        page_obj = p.page(page_number)
+    except InvalidPage:
+        page_obj = p.page(1)
     return render(request, "network/following.html", {
-        "posts": posts,
+        "page_obj": page_obj,
     })
 
 def user_profile (request, user_id):
@@ -39,17 +65,31 @@ def user_profile (request, user_id):
     following_count = profile_following.count()
     user_posts = Post.objects.filter(user=user_id).all().order_by("-timestamp")
 
+    if len(user_posts) < 1:
+        messages.warning(request, "No posts to display.")
+
     try:
         current_user = User.objects.get(username=request.user)
         is_following = current_user in [follower.follower for follower in profile_followers]
     except User.DoesNotExist:
         is_following = False
 
+    p = Paginator(user_posts, 10)
+    page_number = request.GET.get('page')
+
+    if not page_number:
+        page_number = 1
+
+    try:
+        page_obj = p.page(page_number)
+    except InvalidPage:
+        page_obj = p.page(1)
+
     return render(request, "network/user.html", {
         "user_profile": user_profile,
         "followers_count": followers_count,
         "following_count": following_count,
-        "user_posts": user_posts,
+        "page_obj": page_obj,
         "is_following": is_following,
     })
 
