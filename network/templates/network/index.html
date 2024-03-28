@@ -28,8 +28,12 @@
                 <blockquote class="blockquote mb-0">
                     <p>{{ post.content }}</p>
                     <footer class="d-flex flex-row blockquote-footer mt-2">
-                        Posted by:
-                        <cite title="Source Title">{{ "&nbsp;" }}{{ post.user }}</cite>
+                        Posted by:{{ "&nbsp;" }}
+                        <cite title="Source Title">
+                            <a href="{% url "user_profile" post.user.id %}">
+                                {{ post.user }}
+                            </a>
+                        </cite>
                         <div class="link link-danger ms-3" id="like_post">
                             {% if post.likes == 1 %}
                                 {{ post.likes }} like

@@ -1,0 +1,70 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div class="container">
+        {% if message %}
+            <div class="alert alert-warning alert-dismissible mt-2">{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <h1 class="mt-5">{{user_profile.username}}</h1>
+        <div class="d-flex flex-row align-items-baseline mb-5">
+            <p class="me-3"><strong>{{ followers_count }}</strong> Followers</p>
+            <p><strong>{{ following_count }}</strong> Following</p>
+            {% if user.is_authenticated %}
+                {% if user_profile.id != user.id %}
+                    {% if is_following %}
+                        <div>
+                            <form action="{% url 'unfollow' user_profile.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger ms-5">Unfollow</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="ms-3">
+                            <form action="{% url 'follow' user_profile.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary ms-5">Follow</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <h2 class="mb-3">Latest posts</h2>
+
+        {% for post in user_posts %}
+            <div class="card mb-3">
+                <div class="card-header">{{ post.timestamp }}</div>
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p>{{ post.content }}</p>
+                        <footer class="d-flex flex-row blockquote-footer mt-2">
+                            Posted by:{{ "&nbsp;" }}
+                            <cite title="Source Title">
+                                <a href="{% url "user_profile" post.user.id %}">
+                                    {{ post.user }}
+                                </a>
+                            </cite>
+                            <div class="link link-danger ms-3" id="like_post">
+                                {% if post.likes == 1 %}
+                                    {{ post.likes }} like
+                                {% else %}
+                                    {{ post.likes }} likes
+                                {% endif %}
+                            </div>
+                        </footer>
+                    </blockquote>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+{% endblock body %}
+    
+{% block script %}
+    <script src="{% static 'network/script.js' %}"></script>
+{% endblock script %}

@@ -1,0 +1,19 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div class="container">
+        {% if message %}
+            <div class="alert alert-warning alert-dismissible mt-2">{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <h1 class="mt-5 mb-3">Recent post from the profiles you follow</h1>
+
+    </div>
+{% endblock body %}
+    
+{% block script %}
+    <script src="{% static 'network/script.js' %}"></script>
+{% endblock script %}
